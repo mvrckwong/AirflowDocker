@@ -54,3 +54,49 @@ services:
       airflow-webserver-users:
         condition:
           service_healthy
+  
+  # export statsd 
+  statsd-exporter:
+    image: prom/statsd-exporter:v0.21.0
+    volumes:
+      - ./dashboard/statsd.yaml:/home/statsd-mapping-configs.yaml
+    entrypoint: ["/bin/sh", "-c", "--"]
+    command: ["statsd_exporter --log.level debug --statsd.mapping-config=/home/statsd-mapping-configs.yaml"]
+    ports:
+      - ${PORT_STATSD_SCRAPE:-9102}:9102   # scrape port
+      - ${PORT_STATSD_INGEST:-9125}:9125   # ingest port
+    restart: always
+
+  # ingesting and scraping
+  prometheus:
+    image: prom/prometheus:v2.26.0
+    volumes:
+      - ./dashboard/prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - ${PORT_PROMETHEUS:-9090}:9090
+    restart: always
+
+  # grafana dashboard
+  grafana:
+    image: grafana/grafana:6.7.2
+    container_name: grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER:-grafana}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD:-grafana}
+      - GF_USERS_ALLOW_SIGN_UP=${GF_USERS_ALLOW_SIGN_UP:-false}
+    restart: always
+    ports:
+      - ${PORT_GRAFANA:-3000}:3000
+
+
+volumes:
+  prometheus_data:
+  grafana_data:

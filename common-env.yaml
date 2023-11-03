@@ -1,0 +1,34 @@
+version: '3.8'
+
+# Common Services
+services:
+  airflow-common:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile
+
+    environment:
+      AIRFLOW__CORE__EXECUTOR: SequentialExecutor
+
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:///${DB_DEST_FILE}
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: sqlite:///${DB_DEST_FILE}
+      AIRFLOW__CORE__FERNET_KEY: ''
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'false'
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+
+      #AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
+    
+    volumes:
+      - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
+      - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
+      - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
+      - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
+
+      # sqlite3 database (if there is)
+      - ${DB_SRC_FILE}:${DB_DEST_FILE}
+
+      # project path
+      - ${PROJ_SRC_DIR}:${PROJ_DEST_DIR}/sample_proj
+
+    #user: "${AIRFLOW_UID:-50000}:0"
+    user: root

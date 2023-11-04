@@ -28,7 +28,7 @@ services:
       - ${DB_SRC_FILE}:${DB_DEST_FILE}
 
       # project path
-      - ${PROJ_SRC_DIR}:${PROJ_DEST_DIR}/sample_proj
+      # - ${PROJ_SRC_DIR}:${PROJ_DEST_DIR}/sample_proj
 
     # user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-50000}"
     user: root

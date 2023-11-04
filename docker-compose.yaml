@@ -5,6 +5,9 @@ services:
 
   # initializing airflow, upgrading the database
   airflow-init:
+    extends:
+      file: common-env.yaml
+      service: airflow-common
     entrypoint: /bin/bash -c "/bin/bash -c \"$${@}\""
     command: |
       /bin/bash -c "
@@ -84,6 +87,10 @@ services:
       - ${PORT_STATSD_SCRAPE:-9102}:9102   # scrape port
       - ${PORT_STATSD_INGEST:-9125}:9125   # ingest port
     restart: always
+    depends_on:
+      airflow-webserver-users:
+        condition:
+          service_healthy
 
   # ingesting and scraping
   prometheus:
@@ -99,6 +106,10 @@ services:
     ports:
       - ${PORT_PROMETHEUS:-9090}:9090
     restart: always
+    depends_on:
+      airflow-webserver-users:
+        condition:
+          service_healthy
 
   # grafana dashboard
   grafana:
@@ -113,6 +124,10 @@ services:
     restart: always
     ports:
       - ${PORT_GRAFANA:-3000}:3000
+    depends_on:
+      airflow-webserver-users:
+        condition:
+          service_healthy
 
 
 volumes:

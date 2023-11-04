@@ -60,10 +60,10 @@ x-airflow-common:
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
-    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${DB_USER}:${DB_PW}@${DB_HOST}/${DB_NAME}
     # For backward compatibility, with Airflow <2.3
-    AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
-    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
+    AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${DB_USER}:${DB_PW}@${DB_HOST}/${DB_NAME}
+    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://${DB_USER}:${DB_PW}@${DB_HOST}/${DB_NAME}
     AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
     
     AIRFLOW__CORE__FERNET_KEY: ''
@@ -103,7 +103,7 @@ services:
 
   airflow-webserver:
     <<: *airflow-common
-    command: webserver
+    command: ["webserver"]
     ports:
       - "8080:8080"
     healthcheck:
@@ -120,7 +120,7 @@ services:
 
   airflow-scheduler:
     <<: *airflow-common
-    command: scheduler
+    command: ["scheduler"]
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
       interval: 30s
@@ -135,7 +135,7 @@ services:
 
   airflow-worker:
     <<: *airflow-common
-    command: celery worker
+    command: ["celery worker"]
     healthcheck:
       # yamllint disable rule:line-length
       test:

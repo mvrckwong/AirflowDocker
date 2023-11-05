@@ -89,7 +89,7 @@ x-airflow-common:
 
 
 services:
-  redist:
+  redis:
     image: redis:latest
     expose:
       - 6379
@@ -105,7 +105,7 @@ services:
     <<: *airflow-common
     command: ["webserver"]
     ports:
-      - "8080:8080"
+      - "${PORT_AIRFLOW_WEBSERVER:-8080}:8080"
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
       interval: 30s

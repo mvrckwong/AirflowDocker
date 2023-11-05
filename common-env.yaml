@@ -1,11 +1,8 @@
 version: '3.8'
 
-# Common Services
+# Common Environment for Airflow
 services:
   airflow-common:
-    build:
-      context: ./docker
-      dockerfile: Dockerfile
 
     environment:
       AIRFLOW__CORE__EXECUTOR: SequentialExecutor

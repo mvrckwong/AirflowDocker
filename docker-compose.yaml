@@ -74,10 +74,10 @@ x-airflow-common:
 
   volumes:
     # insert airflow directories
-    - ${AIRFLOW_SRC_DIR:-.}/dags:/opt/airflow/dags
-    - ${AIRFLOW_SRC_DIR:-.}/logs:/opt/airflow/logs
-    - ${AIRFLOW_SRC_DIR:-.}/config:/opt/airflow/config
-    - ${AIRFLOW_SRC_DIR:-.}/plugins:/opt/airflow/plugins
+    - ${AIRFLOW_SRC_DIR:-.}/dags:${AIRFLOW_DEST_DIR:-/opt/airflow}/dags
+    - ${AIRFLOW_SRC_DIR:-.}/logs:${AIRFLOW_DEST_DIR:-/opt/airflow}/logs
+    - ${AIRFLOW_SRC_DIR:-.}/config:${AIRFLOW_DEST_DIR:-/opt/airflow}/config
+    - ${AIRFLOW_SRC_DIR:-.}/plugins:${AIRFLOW_DEST_DIR:-/opt/airflow}/plugins
 
     # insert project paths
 
@@ -135,7 +135,7 @@ services:
 
   airflow-worker:
     <<: *airflow-common
-    command: ["celery worker"]
+    command: celery worker
     healthcheck:
       # yamllint disable rule:line-length
       test:
@@ -240,8 +240,8 @@ services:
     # yamllint enable rule:line-length
     environment:
       <<: *airflow-common-env
-      _AIRFLOW_DB_MIGRATE: 'true'
-      _AIRFLOW_WWW_USER_CREATE: 'true'
+      _AIRFLOW_DB_MIGRATE: ${_AIRFLOW_DB_MIGRATE:-'false'}
+      _AIRFLOW_WWW_USER_CREATE: ${_AIRFLOW_WWW_USER_CREATE:-'false'}
       _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
       _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
       _PIP_ADDITIONAL_REQUIREMENTS: ''
@@ -256,7 +256,6 @@ services:
     environment:
       <<: *airflow-common-env
       CONNECTION_CHECK_MAX_COUNT: "0"
-    # Workaround for entrypoint issue. See: https://github.com/apache/airflow/issues/16252
     command:
       - bash
       - -c
@@ -264,14 +263,13 @@ services:
 
   # You can enable flower by adding "--profile flower" option e.g. docker-compose --profile flower up
   # or by explicitly targeted on the command line e.g. docker-compose up flower.
-  # See: https://docs.docker.com/compose/profiles/
   flower:
     <<: *airflow-common
     command: celery flower
-    profiles:
-      - flower
+    # profiles:
+    #   - flower
     ports:
-      - "5555:5555"
+      - "${PORT_FLOWER:-5555}:5555"
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:5555/"]
       interval: 30s

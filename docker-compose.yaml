@@ -84,12 +84,12 @@ x-airflow-common:
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
-    airflow-redis:
+    redis:
       condition: service_healthy
 
 
 services:
-  airflow-redis:
+  redist:
     image: redis:latest
     expose:
       - 6379

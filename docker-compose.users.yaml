@@ -25,6 +25,11 @@ x-airflow-common:
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
 
+    AIRFLOW__SCHEDULER__STATDS_ON: 'true'
+    AIRFLOW__SCHEDULER__STATDS_HOST: statsd-exporter
+    AIRFLOW__SCHEDULER__STATDS_PORT: 9125
+    AIRFLOW__SCHEDULER__PREFIX: airflow
+
   volumes:
     # insert airflow directories
     - ${AIRFLOW_SRC_DIR:-.}/dags:${AIRFLOW_DEST_DIR:-/opt/airflow}/dags
@@ -144,7 +149,7 @@ services:
 
   # export statsd 
   statsd-exporter:
-    image: prom/statsd-exporter:v0.21.0
+    image: prom/statsd-exporter:v0.25.0
     volumes:
       - ./dashboard/statsd.yaml:/home/statsd-mapping-configs.yaml
     entrypoint: ["/bin/sh", "-c", "--"]
@@ -153,14 +158,12 @@ services:
       - ${PORT_STATSD_SCRAPE:-9102}:9102   # scrape port
       - ${PORT_STATSD_INGEST:-9125}:9125   # ingest port
     restart: always
-    depends_on:
-      <<: *airflow-common-depends-on
-      airflow-webserver:
-        condition: service_healthy
+    # depends_on:
+    #   <<: *airflow-common-depends-on
 
   # ingesting and scraping
   prometheus:
-    image: prom/prometheus:v2.26.0
+    image: prom/prometheus:main
     volumes:
       - ./dashboard/prometheus.yaml:/etc/prometheus/prometheus.yaml
       - prometheus_data:/prometheus
@@ -172,11 +175,6 @@ services:
     ports:
       - ${PORT_PROMETHEUS:-9090}:9090
     restart: always
-    depends_on:
-      <<: *airflow-common-depends-on
-      airflow-webserver:
-        condition: service_healthy
 
 volumes:
   prometheus_data:
-  grafana_data:

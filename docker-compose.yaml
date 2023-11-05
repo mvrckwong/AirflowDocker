@@ -84,12 +84,12 @@ x-airflow-common:
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
-    redis:
+    airflow-redis:
       condition: service_healthy
 
 
 services:
-  redis:
+  airflow-redis:
     image: redis:latest
     expose:
       - 6379
@@ -263,7 +263,7 @@ services:
 
   # You can enable flower by adding "--profile flower" option e.g. docker-compose --profile flower up
   # or by explicitly targeted on the command line e.g. docker-compose up flower.
-  flower:
+  airflow-flower:
     <<: *airflow-common
     command: celery flower
     # profiles:

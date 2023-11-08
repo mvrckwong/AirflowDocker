@@ -44,8 +44,4 @@ The followings tasks is in consideration of low-cost development, but highly-sca
 
 <!-- REFERENCES -->
 ## References
-* [Choose an Open Source License](https://choosealicense.com)
-* [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
-* [Malven's Flexbox Cheatsheet](https://flexbox.malven.co/)
-* [Malven's Grid Cheatsheet](https://grid.malven.co/)
-* [Img Shields](https://shields.io)
+* [MaxcoTec Learning](https://www.youtube.com/watch?v=xyeR_uFhnD4)

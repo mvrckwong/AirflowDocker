@@ -45,3 +45,4 @@ The followings tasks is in consideration of low-cost development, but highly-sca
 <!-- REFERENCES -->
 ## References
 * [MaxcoTec Learning](https://www.youtube.com/watch?v=xyeR_uFhnD4)
+* [Airflow Documentation](https://airflow.apache.org/docs/apache-airflow/2.7.3/docker-compose.yaml)

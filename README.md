@@ -41,6 +41,8 @@ The followings tasks is in consideration of low-cost development, but highly-sca
 
 <!-- Images and/or Diagrams -->
 ## Diagrams and/or Images
+![grafana_sample](images/image.png)
+![airflow_sample](images/images-2.png)
 
 <!-- REFERENCES -->
 ## References

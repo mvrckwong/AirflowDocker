@@ -1,6 +1,11 @@
 # Docker Airflow
 Apache Airflow is an open-source workflow management platform for data engineering pipelines. It is designed to programmatically author, schedule, and monitor workflows. Airflow is one of the best data orchestration. Although for beginners, airflow is hard to setup. The repository will be a template for the author to be used in future developments. Also, roadmaps will be documented for decision-making purposes.
 
+## Objective
+- Create a docker-compose for initializing and/or admin accounts (postgre db)
+- Create a docker-compose for users (postgre db)
+- Create a docker-compose for testing (sqlite db) 
+
 <!-- GETTING STARTED -->
 ## Getting Started
 For every development, the author almost always use containerize environment for its portability. The objective it has to be portability in different environments.

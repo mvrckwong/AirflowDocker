@@ -1,0 +1,19 @@
+version: '3.8'
+name: 'vault'
+
+services:
+  vault:
+    build: .
+    ports:
+      - "8200:8200"
+    volumes:
+      - vault-file:/vault/file
+      - ./vault-config.json:/vault/config/vault-config.json
+    environment:
+      VAULT_ADDR: http://0.0.0.0:8200
+      VAULT_API_ADDR: http://0.0.0.0:8200
+    cap_add:
+      - IPC_LOCK
+
+volumes:
+  vault-file:

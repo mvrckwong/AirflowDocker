@@ -45,7 +45,7 @@
 # Feel free to modify this file to suit your needs.
 ---
 
-version: '3.8'
+version: '3.9'
 name: 'airflow-dev'
 
 x-airflow-common:
@@ -55,7 +55,7 @@ x-airflow-common:
   # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
   build:
     context: ./.devcontainer
-    dockerfile: Dockerfile
+    dockerfile: Dockerfile.astronomer
 
   environment:
     &airflow-common-env

@@ -1,5 +1,5 @@
 # Getting the base image
-FROM apache/airflow:2.7.1
+FROM apache/airflow:2.9.0-python3.9
 
 # Copying the requirements
 COPY requirements.txt /opt/requirements.txt

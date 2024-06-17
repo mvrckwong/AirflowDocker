@@ -19,12 +19,12 @@ else
 fi
 
 # Fetch and parse the secrets
-response=$(curl --silent \
+RESPONSE=$(curl --silent \
   --location "https://api.cloud.hashicorp.com/secrets/2023-06-13/organizations/68da4ae2-5f9a-43aa-8c4e-046da0b3b20b/projects/55184cdf-03ba-42c3-a8e3-9bb96aa0d10c/apps/dev/open" \
   --request GET \
   --header "Authorization: Bearer $HCP_API_TOKEN" | jq -r '.secrets[] | "\(.name)=\(.version.value)"')
 
 # Parse the response and assign to environment variables
-for line in $response; do
+for line in $RESPONSE; do
   export $line
 done

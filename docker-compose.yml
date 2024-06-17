@@ -79,8 +79,6 @@ x-airflow-common:
     - ${AIRFLOW_SRC_DIR:-.}/config:${AIRFLOW_DEST_DIR:-/opt/airflow}/config
     - ${AIRFLOW_SRC_DIR:-.}/plugins:${AIRFLOW_DEST_DIR:-/opt/airflow}/plugins
 
-    # insert project paths
-
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on

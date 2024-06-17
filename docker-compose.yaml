@@ -54,7 +54,7 @@ x-airflow-common:
   # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
   # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
   build:
-    context: ./docker
+    context: ./.devcontainer
     dockerfile: Dockerfile
 
   environment:
@@ -266,8 +266,8 @@ services:
   airflow-flower:
     <<: *airflow-common
     command: celery flower
-    # profiles:
-    #   - flower
+    profiles:
+      - debug
     ports:
       - "${PORT_AIRFLOW_FLOWER:-5555}:5555"
     healthcheck:

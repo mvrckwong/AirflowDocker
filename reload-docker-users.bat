@@ -1,1 +1,0 @@
-docker compose -f "docker-compose.users.yaml" up -d --build

@@ -46,7 +46,7 @@
 ---
 
 version: '3.8'
-name: 'datapipeline-prod'
+name: 'airflow-dev'
 
 x-airflow-common:
   &airflow-common
@@ -67,8 +67,8 @@ x-airflow-common:
     AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
     
     AIRFLOW__CORE__FERNET_KEY: ''
-    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-    AIRFLOW__CORE__LOAD_EXAMPLES: 'true'
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'false'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
 
@@ -90,6 +90,7 @@ x-airflow-common:
 
 services:
   redis:
+    container_name: redis
     image: redis:latest
     expose:
       - 6379
@@ -101,11 +102,13 @@ services:
       start_period: 30s
     restart: always
 
+
   airflow-webserver:
     <<: *airflow-common
+    container_name: webserver
     command: ["webserver"]
     ports:
-      - "${PORT_AIRFLOW_WEBSERVER:-8080}:8080"
+      - "${PORT_AIRFLOW_WEBSERVER}:8080"
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
       interval: 30s
@@ -115,11 +118,11 @@ services:
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
-      airflow-init:
-        condition: service_completed_successfully
+
 
   airflow-scheduler:
     <<: *airflow-common
+    container_name: scheduler
     command: ["scheduler"]
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
@@ -130,8 +133,8 @@ services:
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
-      airflow-init:
-        condition: service_completed_successfully
+      airflow-webserver:
+        condition: service_healthy
 
   airflow-worker:
     <<: *airflow-common
@@ -153,8 +156,9 @@ services:
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
-      airflow-init:
-        condition: service_completed_successfully
+      airflow-webserver:
+        condition: service_healthy
+
 
   airflow-triggerer:
     <<: *airflow-common
@@ -168,11 +172,13 @@ services:
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
-      airflow-init:
-        condition: service_completed_successfully
+      airflow-webserver:
+        condition: service_healthy
+
 
   airflow-init:
     <<: *airflow-common
+    container_name: init
     entrypoint: /bin/bash
     # yamllint disable rule:line-length
     command:
@@ -246,11 +252,15 @@ services:
       _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
       _PIP_ADDITIONAL_REQUIREMENTS: ''
     user: "0:0"
+    profiles:
+      - init
     volumes:
       - ${AIRFLOW_PROJ_DIR:-.}:/sources
 
+
   airflow-cli:
     <<: *airflow-common
+    container_name: cli
     profiles:
       - debug
     environment:
@@ -261,10 +271,12 @@ services:
       - -c
       - airflow
 
+
   # You can enable flower by adding "--profile flower" option e.g. docker-compose --profile flower up
   # or by explicitly targeted on the command line e.g. docker-compose up flower.
   airflow-flower:
     <<: *airflow-common
+    container_name: flower
     command: celery flower
     profiles:
       - debug
@@ -279,5 +291,5 @@ services:
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
-      airflow-init:
-        condition: service_completed_successfully
+      airflow-webserver:
+        condition: service_healthy
